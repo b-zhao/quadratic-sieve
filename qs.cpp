@@ -117,7 +117,7 @@ void sieve() {
                 sieved_alts.back()[j] = pw;
             }
             for (int j = 0; j < num_primes; j++) {
-                basis[j][cur_basis] = prime_powers[idx][j] & 1; // need to incorporate mod 2 somewhere (TODO)
+                basis[j][cur_basis] = prime_powers[idx][j] & 1;
             }
             cur_basis++;
         }
