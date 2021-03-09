@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-// TODO: debug this (currently works with n = 55 and possibly some other cases)
+// TODO: debug this (currently works with a few cases such as n = 55, n = 143, and potentially others)
 
 using namespace std;
 
@@ -101,7 +101,7 @@ void sieve() {
                     // cout << "p: " << p << "\n";
                     if (elts[idx] == 1) {
                         // j^2 - n is smooth, add to basis
-                        basis_size++;
+                        // basis_size++;
                         prime_divs.push_back(p);
                     }
                 }
@@ -149,10 +149,11 @@ void sieve() {
     //     cout << elt << " ";
     // }
     // cout << "\n";
+    basis_size = (int)sieved_sqrts.size();
     cout << "basis size: " << basis_size << "\n";
     cout << "sieved sqrts size: " << sieved_sqrts.size() << "\n";
     cout << "sieved alts size: " << sieved_alts.size() << "\n";
-    assert((int)sieved_sqrts.size() == basis_size);
+    // assert((int)sieved_sqrts.size() == basis_size);
 }
 vector<bitset<max_basis_size>> null_space;
 
