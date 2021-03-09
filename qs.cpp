@@ -78,11 +78,6 @@ void sieve() {
     for (ll i = l; i <= r; i++) {
         elts.push_back(i * i - n);
     }
-    cout << "elts: " << "\n";
-    for (int elt: elts) {
-        cout << elt << " ";
-    }
-    cout << "\n";
     for (int i = 0; i < num_primes; i++) {
         int p = primes[i];
         for (int sq: sqrts[i]) {
@@ -98,10 +93,8 @@ void sieve() {
                 while (elts[idx] % p == 0) {
                     elts[idx] /= p;
                     prime_powers[idx][i]++;
-                    // cout << "p: " << p << "\n";
                     if (elts[idx] == 1) {
                         // j^2 - n is smooth, add to basis
-                        // basis_size++;
                         prime_divs.push_back(p);
                     }
                 }
@@ -109,15 +102,8 @@ void sieve() {
         }
     }
 
-    cout << "\nprime divs:\n";
-    for (int p: prime_divs) {
-        cout << p << " ";
-    }
-
-    // sieved_sqrts.resize(basis_size);
     basis.resize(num_primes);
     int cur_basis = 0;
-    // cout << "\nsieved sqrts:\n";
     for (int i = l; i <= r; i++) {
         int idx = i - l;
         if (elts[idx] == 1) {
@@ -125,7 +111,6 @@ void sieve() {
             sieved_sqrts.push_back(i);
             sieved_alts.emplace_back();
             sieved_alts.back().resize(num_primes);
-            // cout << i << " ";
             int alt = 1;
             for (int j = 0; j < num_primes; j++) {
                 int pw = prime_powers[idx][j];
@@ -138,22 +123,7 @@ void sieve() {
         }
     }
     cout << "\n";
-
-    // cout << "sieved sqrts\n";
-    // for (int elt: sieved_sqrts) {
-    //     cout << elt << " ";
-    // }
-    // cout << "\n";
-    // cout << "sieved alt sqrts\n";
-    // for (int elt: sieved_alt_sqrts) {
-    //     cout << elt << " ";
-    // }
-    // cout << "\n";
     basis_size = (int)sieved_sqrts.size();
-    cout << "basis size: " << basis_size << "\n";
-    cout << "sieved sqrts size: " << sieved_sqrts.size() << "\n";
-    cout << "sieved alts size: " << sieved_alts.size() << "\n";
-    // assert((int)sieved_sqrts.size() == basis_size);
 }
 vector<bitset<max_basis_size>> null_space;
 
@@ -219,16 +189,16 @@ void try_coeffs() {
         // a^2 = b^2 mod n
         ll pp = (a + b) % n;
         ll qq = (a - b) % n;
-        cout << "null space vec:\n";
-        for (int i = 0; i < basis_size; i++) {
-            cout << sieved_sqrts[i] << " ";
-        }
-        cout << "\n";
-        for (int i = 0; i < basis_size; i++) {
-            cout << bs[i] << " ";
-        }
-        cout << "\n";
-        cout << "a: " << a << ", b: " << b << "\n";
+        // cout << "null space vec:\n";
+        // for (int i = 0; i < basis_size; i++) {
+        //     cout << sieved_sqrts[i] << " ";
+        // }
+        // cout << "\n";
+        // for (int i = 0; i < basis_size; i++) {
+        //     cout << bs[i] << " ";
+        // }
+        // cout << "\n";
+        // cout << "a: " << a << ", b: " << b << "\n";
         if (pp > 1 and pp < n) {
             p = min(pp, qq), q = max(pp, qq);
             return;
