@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-// TODO: debug this (currently works with a few cases such as n = 55, n = 143, and potentially others)
+// TODO: debug this (works for several cases but seems to fail for even semiprimes)
 
 using namespace std;
 
@@ -16,10 +16,11 @@ typedef long long ll;
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 7; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int max_prime_freq = 100; // upper bound for number of primes used
-const int sieve_bound = 10; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
-const int max_basis_size = 100; // upper bound for the number of smooth elements
+const int prime_bound = 30; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int max_prime_freq = 30; // upper bound for number of primes used
+const int sieve_bound = 30; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int max_basis_size = 30; // upper bound for the number of smooth elements
+const int max_exp = 30; // max exponent of a prime number
 
 vector<int> primes;
 vector<vector<ll>> sqrts;
@@ -42,8 +43,8 @@ void process_primes() {
     }
     for (int p: primes) {
         vector<ll> powers = {1};
-        while (powers.back() * p < n) {
-            powers.push_back(powers.back() * p);
+        for (int i = 1; i < max_exp; i++) {
+            powers.push_back((powers[i - 1] * p) % n);
         }
         all_powers.push_back(powers);
     }
@@ -78,6 +79,7 @@ void sieve() {
     for (ll i = l; i <= r; i++) {
         elts.push_back(i * i - n);
     }
+    vector<ll> elts0 = elts; // keep track of original values (for debugging)
     for (int i = 0; i < num_primes; i++) {
         int p = primes[i];
         for (int sq: sqrts[i]) {
@@ -111,7 +113,6 @@ void sieve() {
             sieved_sqrts.push_back(i);
             sieved_alts.emplace_back();
             sieved_alts.back().resize(num_primes);
-            int alt = 1;
             for (int j = 0; j < num_primes; j++) {
                 int pw = prime_powers[idx][j];
                 sieved_alts.back()[j] = pw;
@@ -122,16 +123,23 @@ void sieve() {
             cur_basis++;
         }
     }
-    cout << "\n";
     basis_size = (int)sieved_sqrts.size();
 }
 vector<bitset<max_basis_size>> null_space;
+
+void print_basis() {
+    for (int row = 0; row < num_primes; row++) {
+        cout << basis[row] << "\n";
+    }
+    cout << "\n";
+}
 
 void find_null_space() {
     // Find solutions to Ax = 0
     // Size of A is num prime factors x basis size
     vector<int> where(basis_size, -1);
     for (int row = 0, col = 0; col < basis_size; col++) {
+        // print_basis();
         for (int i = row + 1; i < num_primes; i++) {
             if (basis[i][col]) {
                 swap(basis[i], basis[row]);
@@ -141,22 +149,28 @@ void find_null_space() {
         }
         if (~where[col]) {
             for (int i = 0; i < row; i++) {
-                basis[i] ^= basis[row];
+                if (basis[i][col]) basis[i] ^= basis[row];
             }
-            for (int i = row + 1; row < num_primes; row++) {
-                basis[i] ^= basis[row];
+            for (int i = row + 1; i < num_primes; i++) {
+                if (basis[i][col]) basis[i] ^= basis[row];
             }
             row++;
         }
     }
-    for (int col = 0; col < max_prime_freq; col++) {
+    // print_basis();
+    // cout << "creating null space\n";
+    for (int col = 0; col < basis_size; col++) {
         if (where[col] == -1) {
-            bitset<max_prime_freq> bs;
-            for (int row = 0; row < num_primes; row++) {
-                bs[row] = basis[row][col];
+            bitset<max_basis_size> bs;
+            for (int c2 = 0; c2 < col; c2++) {
+                if (~where[c2]) {
+                    int row = where[c2];
+                    bs[c2] = basis[row][col];
+                } 
             }
             bs[col] = 1;
             null_space.push_back(bs);
+            // cout << "col: " << col << ", bs: " << bs << "\n";
         }
     }
 }
@@ -165,8 +179,9 @@ ll p = -1;
 ll q = -1;
 
 void try_coeffs() {
-    for (int i = 0; i < basis_size; i++) {
-        bitset<max_basis_size>& bs = null_space[i];
+    for (int it = 0; it < (int)null_space.size(); it++) {
+        bitset<max_basis_size>& bs = null_space[it];
+        cout << "bs: " << bs << "\n";
         ll a = 1;
         ll b = 1;
         vector<int> b_vec(num_primes);
@@ -189,17 +204,11 @@ void try_coeffs() {
         // a^2 = b^2 mod n
         ll pp = (a + b) % n;
         ll qq = (a - b) % n;
-        // cout << "null space vec:\n";
-        // for (int i = 0; i < basis_size; i++) {
-        //     cout << sieved_sqrts[i] << " ";
-        // }
-        // cout << "\n";
-        // for (int i = 0; i < basis_size; i++) {
-        //     cout << bs[i] << " ";
-        // }
-        // cout << "\n";
-        // cout << "a: " << a << ", b: " << b << "\n";
-        if (pp > 1 and pp < n) {
+        if (qq < 0) qq += n;
+        
+        if (abs(a) == abs(b)) continue;
+        cout << "a: " << a << ", b: " << b << "\n";
+        if (pp > 1 and pp < n and qq > 1 and qq < n and pp != qq) {
             p = min(pp, qq), q = max(pp, qq);
             return;
         }
@@ -207,6 +216,8 @@ void try_coeffs() {
 }
 
 int main() {
+    // freopen("A.in", "r", stdin);
+    // freopen("A.out", "w", stdout);
     cin >> n;
     m = (ll)sqrt(n);
 
