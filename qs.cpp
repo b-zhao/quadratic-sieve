@@ -12,14 +12,15 @@ typedef long long ll;
 // Sources used:
 // https://www.cc.gatech.edu/~rpeng/CS6550_S21/Feb15QS.pdf, https://www.cs.virginia.edu/crab/QFS_Simple.pdf, https://en.wikipedia.org/wiki/Quadratic_sieve
 
+// apparently fails for 5026163 = 601 x 8363
 
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 40; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int max_prime_freq = 40; // upper bound for number of primes used
-const int sieve_bound = 40; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
-const int max_basis_size = 40; // upper bound for the number of smooth elements
+const int prime_bound = 3000; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int max_prime_freq = 1000; // upper bound for number of primes used
+const int sieve_bound = 100000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int max_basis_size = 100000; // upper bound for the number of smooth elements
 const int max_exp = 30; // max exponent of a prime number
 
 vector<int> primes;
@@ -208,6 +209,8 @@ void try_coeffs() {
         ll pp = (a + b) % n;
         ll qq = (a - b) % n;
         if (qq < 0) qq += n;
+
+        // cout << "a: " << a << ", b: " << b << "\n";
         
         if (abs(a) == abs(b)) continue;
         // cout << "a: " << a << ", b: " << b << "\n";
