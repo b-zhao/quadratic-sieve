@@ -70,7 +70,6 @@ int basis_size = 0;
 vector<ll> sieved_sqrts; // sqrts of x^2
 vector<vector<int>> sieved_alts; // factors of x^2 - n
 vector<bitset<max_basis_size>> basis;
-vector<ll> prime_divs;
 
 void sieve() {
     vector<ll> elts; // elements of the form (x + m)^2 - n (with x \in [1, m + sieve_bound]) is more convenient to implement
@@ -78,7 +77,7 @@ void sieve() {
     int l = m + 1;
     int r = m + sieve_bound;
     for (ll i = l; i <= r; i++) {
-        elts.push_back((i * i - n));
+        elts.push_back(i * i - n);
     }
     vector<ll> elts0 = elts; // keep track of original values (for debugging)
     for (int i = 0; i < num_primes; i++) {
@@ -87,7 +86,7 @@ void sieve() {
             // want p | x^2 - n
             // i.e. x^2 \equiv n mod p
             // solutions of x are (s0 + pk), (s1 + pk), where s0 and s1 are square roots of n mod p
-            int min_idx = l - (l % p) + sq; // min idx = sq + pk
+            int min_idx = l - (l % p) + sq; // p | (sq + pk)^2 - n for all k >= 0
             if (min_idx < l) min_idx += p;
             assert(min_idx >= l);
             for (int j = min_idx; j <= r; j += p) {
@@ -96,10 +95,6 @@ void sieve() {
                 while (elts[idx] % p == 0) {
                     elts[idx] /= p;
                     prime_powers[idx][i]++;
-                    if (elts[idx] == 1) {
-                        // j^2 - n is smooth, add to basis
-                        prime_divs.push_back(p);
-                    }
                 }
             }
         }
