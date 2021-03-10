@@ -16,10 +16,10 @@ typedef long long ll;
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 30; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int max_prime_freq = 30; // upper bound for number of primes used
-const int sieve_bound = 30; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
-const int max_basis_size = 30; // upper bound for the number of smooth elements
+const int prime_bound = 100; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int max_prime_freq = 100; // upper bound for number of primes used
+const int sieve_bound = 100; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int max_basis_size = 100; // upper bound for the number of smooth elements
 const int max_exp = 30; // max exponent of a prime number
 
 vector<int> primes;
@@ -138,16 +138,17 @@ void find_null_space() {
     // Find solutions to Ax = 0
     // Size of A is num prime factors x basis size
     vector<int> where(basis_size, -1);
-    for (int row = 0, col = 0; col < basis_size; col++) {
-        // print_basis();
-        for (int i = row + 1; i < num_primes; i++) {
+    // print_basis();
+    for (int row = 0, col = 0; col < basis_size and row < num_primes; col++) {
+        // cout << "col: " << col << ", row: " << row << "\n";
+        for (int i = row; i < num_primes; i++) {
             if (basis[i][col]) {
                 swap(basis[i], basis[row]);
                 where[col] = row;
                 break;
             }
         }
-        if (~where[col]) {
+        if (basis[row][col]) {
             for (int i = 0; i < row; i++) {
                 if (basis[i][col]) basis[i] ^= basis[row];
             }
@@ -156,6 +157,8 @@ void find_null_space() {
             }
             row++;
         }
+        // cout << "where: " << where[col] << "\n";
+        // print_basis();
     }
     // print_basis();
     // cout << "creating null space\n";
@@ -181,7 +184,7 @@ ll q = -1;
 void try_coeffs() {
     for (int it = 0; it < (int)null_space.size(); it++) {
         bitset<max_basis_size>& bs = null_space[it];
-        cout << "bs: " << bs << "\n";
+        // cout << "bs: " << bs << "\n";
         ll a = 1;
         ll b = 1;
         vector<int> b_vec(num_primes);
@@ -207,7 +210,7 @@ void try_coeffs() {
         if (qq < 0) qq += n;
         
         if (abs(a) == abs(b)) continue;
-        cout << "a: " << a << ", b: " << b << "\n";
+        // cout << "a: " << a << ", b: " << b << "\n";
         if (pp > 1 and pp < n and qq > 1 and qq < n and pp != qq) {
             p = min(pp, qq), q = max(pp, qq);
             return;
@@ -221,7 +224,7 @@ int main() {
     cin >> n;
     m = (ll)sqrt(n);
 
-    cout << "m: " << m << "\n";
+    // cout << "m: " << m << "\n";
 
     process_primes();
 
@@ -234,7 +237,7 @@ int main() {
     try_coeffs(); // iterate over a, b such that a^2 = b^2 mod n
 
     if (~p) {
-        cout << p << " " << q << "\n";
+        cout << n << " " << p << " " << q << "\n";
     } else {
         cout << "No factorization found!\n";
     }
