@@ -5,6 +5,10 @@
 * Complilation:
     g++ qs.cpp -o qs, Running: ./qs (then input n)
 
+## Stress tester
+* Stress tester taken directly from https://github.com/FlowerOfSorrow/Utility/blob/main/compare.cpp
+* Compile gen.cpp, qs.cpp, naive.cpp, and run ./compare naive qs
+
 Works so far for n = pq where p and q are odd and p, q < 23
 
 Sources used:
