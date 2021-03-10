@@ -1,6 +1,10 @@
 #include <bits/stdc++.h>
 
-// TODO: debug this (works for several cases but seems to fail for even semiprimes)
+
+// To focus on: How to efficiently get solutions from the basis vectors of the solutions to Ax = 0? (right now I am just
+// iterating through the basis vectors of the null space, while I could potentially be using information from the entire
+// null space). Maybe some kind of random sampling of subsets would be good?
+
 
 using namespace std;
 
@@ -68,11 +72,11 @@ void find_sqrts() {
 int basis_size = 0;
 
 vector<ll> sieved_sqrts; // sqrts of x^2
-vector<vector<int>> sieved_alts; // factors of x^2 - n
+vector<vector<int>> sieved_alts; // prime factorizations of x^2 - n
 vector<bitset<max_basis_size>> basis;
 
 void sieve() {
-    vector<ll> elts; // elements of the form (x + m)^2 - n (with x \in [1, m + sieve_bound]) is more convenient to implement
+    vector<ll> elts; // elements of the form x^2 - n (with x \in [m + 1, m + sieve_bound])
     vector<vector<int>> prime_powers(sieve_bound, vector<int>(num_primes));
     int l = m + 1;
     int r = m + sieve_bound;
@@ -105,7 +109,7 @@ void sieve() {
     for (int i = l; i <= r; i++) {
         int idx = i - l;
         if (elts[idx] == 1) {
-            // i^2 is smooth, add to basis
+            // i^2 - n is smooth, add to basis
             sieved_sqrts.push_back(i);
             sieved_alts.emplace_back();
             sieved_alts.back().resize(num_primes);
@@ -136,7 +140,6 @@ void find_null_space() {
     vector<int> where(basis_size, -1);
     // print_basis();
     for (int row = 0, col = 0; col < basis_size and row < num_primes; col++) {
-        // cout << "col: " << col << ", row: " << row << "\n";
         for (int i = row; i < num_primes; i++) {
             if (basis[i][col]) {
                 swap(basis[i], basis[row]);
@@ -153,7 +156,6 @@ void find_null_space() {
             }
             row++;
         }
-        // cout << "where: " << where[col] << "\n";
         // print_basis();
     }
     // print_basis();
@@ -199,6 +201,10 @@ void try_coeffs() {
             int pw = b_vec[i];
             b *= all_powers[i][pw];
             b %= n;
+        }
+        if((a * a) % n != (b * b) % n) {
+            cout << "a: " << a << ", b: " << b << "\n";
+            return;
         }
         // a^2 = b^2 mod n
         ll pp = (a + b) % n;
