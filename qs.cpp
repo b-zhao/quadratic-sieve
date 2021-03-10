@@ -16,10 +16,10 @@ typedef long long ll;
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 100; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int max_prime_freq = 100; // upper bound for number of primes used
-const int sieve_bound = 100; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
-const int max_basis_size = 100; // upper bound for the number of smooth elements
+const int prime_bound = 40; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int max_prime_freq = 40; // upper bound for number of primes used
+const int sieve_bound = 40; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int max_basis_size = 40; // upper bound for the number of smooth elements
 const int max_exp = 30; // max exponent of a prime number
 
 vector<int> primes;
@@ -77,7 +77,7 @@ void sieve() {
     int l = m + 1;
     int r = m + sieve_bound;
     for (ll i = l; i <= r; i++) {
-        elts.push_back(i * i - n);
+        elts.push_back((i * i - n));
     }
     vector<ll> elts0 = elts; // keep track of original values (for debugging)
     for (int i = 0; i < num_primes; i++) {
@@ -211,7 +211,21 @@ void try_coeffs() {
         
         if (abs(a) == abs(b)) continue;
         // cout << "a: " << a << ", b: " << b << "\n";
-        if (pp > 1 and pp < n and qq > 1 and qq < n and pp != qq) {
+        if (pp > 1 and pp < n and qq > 1 and qq < n and pp != qq and pp * qq == n) {
+            // try all four preimages
+            ll pp2 = n - pp;
+            ll qq2 = n - qq;
+            pair<ll, ll> opt = {-1, -1};
+            for (int a1: (vector<ll>){pp, pp2}) {
+                for (int a2: (vector<ll>){qq, qq2}) {
+                    if (a1 * a2 == n) {
+                        opt = {a1, a2};
+                    }
+                }
+            }
+            if (~opt.first) {
+                p = min(opt.first, opt.second), q = min(opt.first, opt.second);
+            }
             p = min(pp, qq), q = max(pp, qq);
             return;
         }
