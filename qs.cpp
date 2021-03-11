@@ -11,8 +11,9 @@ using namespace std;
 // To focus on: How to efficiently get solutions from the basis vectors of the solutions to Ax = 0? (right now I am just
 // iterating through the basis vectors of the null space, while I could potentially be using information from the entire
 // null space). Maybe some kind of random sampling of subsets would be good?
-
-typedef long long ll; 
+typedef int int2;
+#define int __int128
+typedef __int128 ll; 
 // consider using __int_128 or some bigint class (https://gist.github.com/vinayak-garg/4007974) for future iterations.
 // Could use GMP (https://gmplib.org/) but not supported by online competitive programming judges. Also numpy (for a python version)
 // could be good but is not supported by DMOJ
@@ -20,14 +21,15 @@ typedef long long ll;
 // Sources used:
 // https://www.cc.gatech.edu/~rpeng/CS6550_S21/Feb15QS.pdf, https://www.cs.virginia.edu/crab/QFS_Simple.pdf, https://en.wikipedia.org/wiki/Quadratic_sieve
 
+// 22229588388023 = 2981471 * 7455913
 
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 3000; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int max_prime_freq = 1000; // upper bound for number of primes used
-const int sieve_bound = 100000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
-const int max_basis_size = 100000; // upper bound for the number of smooth elements
+const int prime_bound = 30000; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int max_prime_freq = 4500; // upper bound for number of primes used
+const int sieve_bound = 50000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int max_basis_size = 50000; // upper bound for the number of smooth elements
 const int max_exp = 40; // max exponent of a prime number
 
 vector<int> primes;
@@ -216,20 +218,22 @@ void try_coeffs() {
         // if (qq < 0) qq += n;
 
         // assert((a * a) % n == (b * b) % n);
+        if (a < 0) a += n;
+        if (b < 0) b += n;
 
         ll apb = (a + b) % n;
         ll amb = (a - b) % n;
         if (amb < 0) amb += n;
 
+        // cout << "a: " << a << ", b: " << b << "\n";
         if (abs(a) == abs(b) or a == n - b) continue;
         ll pp = __gcd(n, apb);
         ll qq = __gcd(n, amb);
         if (pp == 1 or qq == 1) continue;
 
 
-        
-        // cout << "a: " << a << ", b: " << b << "\n";
         // cout << "pp: " << pp << ", qq: " << qq << "\n";
+        
         // cout << "a: " << a << ", b: " << b << "\n";
         {
             // try all four preimages
@@ -252,10 +256,12 @@ void try_coeffs() {
     }
 }
 
-int main() {
+int2 main() {
     // freopen("A.in", "r", stdin);
     // freopen("A.out", "w", stdout);
-    cin >> n;
+    long long nn;
+    cin >> nn;
+    n = nn;
     m = (ll)sqrt(n);
 
     // cout << "m: " << m << "\n";
@@ -271,7 +277,7 @@ int main() {
     try_coeffs(); // iterate over a, b such that a^2 = b^2 mod n
 
     if (~p) {
-        cout << n << " " << p << " " << q << "\n";
+        cout << (long long)n << " " << (long long)p << " " << (long long)q << "\n";
     } else {
         cout << "No factorization found!\n";
     }

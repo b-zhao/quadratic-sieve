@@ -6,7 +6,7 @@ typedef long long ll;
 
 int t;
 
-const int maxp = 1e6;
+const int maxp = 5e7;
 
 int isprime[maxp];
 
