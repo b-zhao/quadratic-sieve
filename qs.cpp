@@ -8,12 +8,11 @@
 
 using namespace std;
 
-// To focus on: How to efficiently get solutions from the basis vectors of the solutions to Ax = 0? (right now I am just
-// iterating through the basis vectors of the null space, while I could potentially be using information from the entire
-// null space). Maybe some kind of random sampling of subsets would be good?
-typedef int int2;
-#define int __int128
+
+typedef int int2; 
+#define int __int128 // this prevents overflow for p, q larger than 1e6
 typedef __int128 ll; 
+
 // consider using __int_128 or some bigint class (https://gist.github.com/vinayak-garg/4007974) for future iterations.
 // Could use GMP (https://gmplib.org/) but not supported by online competitive programming judges. Also numpy (for a python version)
 // could be good but is not supported by DMOJ
