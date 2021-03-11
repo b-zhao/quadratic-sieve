@@ -8,6 +8,10 @@
 
 using namespace std;
 
+// To focus on: How to efficiently get solutions from the basis vectors of the solutions to Ax = 0? (right now I am just
+// iterating through the basis vectors of the null space, while I could potentially be using information from the entire
+// null space). Maybe some kind of random sampling of subsets would be good?
+
 typedef long long ll; 
 // consider using __int_128 or some bigint class (https://gist.github.com/vinayak-garg/4007974) for future iterations.
 // Could use GMP (https://gmplib.org/) but not supported by online competitive programming judges. Also numpy (for a python version)
@@ -16,7 +20,6 @@ typedef long long ll;
 // Sources used:
 // https://www.cc.gatech.edu/~rpeng/CS6550_S21/Feb15QS.pdf, https://www.cs.virginia.edu/crab/QFS_Simple.pdf, https://en.wikipedia.org/wiki/Quadratic_sieve
 
-// apparently fails for 5026163 = 601 x 8363
 
 ll n, m; // assume <= 2e18 for now
 
@@ -25,7 +28,7 @@ const int prime_bound = 3000; // smoothness bound (i.e. largest prime in the fac
 const int max_prime_freq = 1000; // upper bound for number of primes used
 const int sieve_bound = 100000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
 const int max_basis_size = 100000; // upper bound for the number of smooth elements
-const int max_exp = 30; // max exponent of a prime number
+const int max_exp = 40; // max exponent of a prime number
 
 vector<int> primes;
 vector<vector<ll>> sqrts;
@@ -180,6 +183,7 @@ ll p = -1;
 ll q = -1;
 
 void try_coeffs() {
+    // cout << "null space size: " << null_space.size() << "\n";
     for (int it = 0; it < (int)null_space.size(); it++) {
         bitset<max_basis_size>& bs = null_space[it];
         // cout << "bs: " << bs << "\n";
@@ -202,20 +206,32 @@ void try_coeffs() {
             b *= all_powers[i][pw];
             b %= n;
         }
-        if((a * a) % n != (b * b) % n) {
-            cout << "a: " << a << ", b: " << b << "\n";
-            return;
-        }
+        // if((a * a) % n != (b * b) % n) {
+        //     cout << "a: " << a << ", b: " << b << "\n";
+        //     return;
+        // }
         // a^2 = b^2 mod n
-        ll pp = (a + b) % n;
-        ll qq = (a - b) % n;
-        if (qq < 0) qq += n;
+        // ll pp = (a + b) % n;
+        // ll qq = (a - b) % n;
+        // if (qq < 0) qq += n;
 
-        // cout << "a: " << a << ", b: " << b << "\n";
+        // assert((a * a) % n == (b * b) % n);
+
+        ll apb = (a + b) % n;
+        ll amb = (a - b) % n;
+        if (amb < 0) amb += n;
+
+        if (abs(a) == abs(b) or a == n - b) continue;
+        ll pp = __gcd(n, apb);
+        ll qq = __gcd(n, amb);
+        if (pp == 1 or qq == 1) continue;
+
+
         
-        if (abs(a) == abs(b)) continue;
         // cout << "a: " << a << ", b: " << b << "\n";
-        if (pp > 1 and pp < n and qq > 1 and qq < n and pp != qq and pp * qq == n) {
+        // cout << "pp: " << pp << ", qq: " << qq << "\n";
+        // cout << "a: " << a << ", b: " << b << "\n";
+        {
             // try all four preimages
             ll pp2 = n - pp;
             ll qq2 = n - qq;
