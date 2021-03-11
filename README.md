@@ -11,10 +11,8 @@
 
 ## Progress
 
-* Passes the stress tester for most n = pq where p and q are odd (picked randomly) and p, q < 10000
-* Some cases where the factorization is not found: n = 5026163 = 601 * 8363
-* TODO: Determine a better way to iterate through / sample vectors from the null space? (i.e. the space that gives a, b such
-that a^2 = b^2 mod n)
+* Passes the stress tester for most n = pq where p and q are odd (picked randomly) and p, q < 1e6
+* TODO: Determine why there seems to be no solution for some n = pq, where max(p, q) > 1e6
 
 Sources used:
 https://www.cc.gatech.edu/~rpeng/CS6550_S21/Feb15QS.pdf, https://www.cs.virginia.edu/crab/QFS_Simple.pdf, https://en.wikipedia.org/wiki/Quadratic_sieve
