@@ -25,8 +25,8 @@ typedef __int128 ll;
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 3000; // smoothness bound (i.e. largest prime in the factorization of each number)
-const int sieve_bound = 50000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
+const int prime_bound = 6000; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int sieve_bound = 1e5; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
 const int max_basis_size = 50000; // upper bound for the number of smooth elements
 const int max_exp = 400; // max exponent of a prime number
 
