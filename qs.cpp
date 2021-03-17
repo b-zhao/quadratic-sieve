@@ -20,15 +20,15 @@ typedef __int128 ll;
 // Sources used:
 // https://www.cc.gatech.edu/~rpeng/CS6550_S21/Feb15QS.pdf, https://www.cs.virginia.edu/crab/QFS_Simple.pdf, https://en.wikipedia.org/wiki/Quadratic_sieve
 
-// 22229588388023 = 2981471 * 7455913
+// 599607257847593 = 15418259 * 38889427
 
 ll n, m; // assume <= 2e18 for now
 
 // parameters to tweak
-const int prime_bound = 30000; // smoothness bound (i.e. largest prime in the factorization of each number)
+const int prime_bound = 3000; // smoothness bound (i.e. largest prime in the factorization of each number)
 const int sieve_bound = 50000; // look at factorizations of x^2 - n where x \in [m + 1, m + sieve_bound] where m = floor(sqrt(n))
 const int max_basis_size = 50000; // upper bound for the number of smooth elements
-const int max_exp = 40; // max exponent of a prime number
+const int max_exp = 400; // max exponent of a prime number
 
 vector<int> primes;
 vector<vector<ll>> sqrts;
@@ -195,6 +195,8 @@ void try_coeffs() {
                 a *= sieved_sqrts[i];
                 for (int j = 0; j < num_primes; j++) {
                     int pw = sieved_alts[i][j];
+                    // cout << "pw: "<< (long long)pw << "\n";
+                    assert(pw < max_exp);
                     b_vec[j] += pw;
                 }
                 a %= n;
@@ -203,9 +205,13 @@ void try_coeffs() {
         for (int i = 0; i < num_primes; i++) {
             b_vec[i] /= 2;
             int pw = b_vec[i];
+            // cout << "pw2: " << (long long)pw << "\n";
+            assert(pw < max_exp);
             b *= all_powers[i][pw];
             b %= n;
         }
+        // cout << "a: " << (long long)a << ", b: " << (long long)b << "\n";
+        // cout << "a^2: " << (long long)((a * a) % n) << ", b^2: " << (long long) ((b * b) % n) << "\n";
         // if((a * a) % n != (b * b) % n) {
         //     cout << "a: " << a << ", b: " << b << "\n";
         //     return;
